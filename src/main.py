@@ -57,14 +57,16 @@ def check_security_headers(url):
 
     try:
         response = requests.get(f"https://{url}", timeout=10, verify=False)
-        headers = response.headers
-
-        for header in required_headers:
-            if header not in headers:
-                missing_headers.append(header)
-
     except requests.RequestException:
-        return "Nem sikerült csatlakozni"
+        try:
+            response = requests.get(f"http://{url}", timeout=10)
+        except requests.RequestException:
+            return "Nem sikerült csatlakozni"
+
+    headers = response.headers
+    for header in required_headers:
+        if header not in headers:
+            missing_headers.append(header)
 
     return missing_headers
 
